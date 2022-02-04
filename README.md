@@ -14,7 +14,7 @@ $ source bridge-env/bin/activate
 Install the requirements
 
 ```bash
-$ pip install django
+$ pip install django==3.0
 $ pip install django-scim2
 $ pip install django-extensions
 $ pip install django-oauth-toolkit
