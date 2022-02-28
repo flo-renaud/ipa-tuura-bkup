@@ -2,9 +2,12 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import UserManager
 from django.db import models
+from django.db.utils import NotSupportedError
 from django.utils.translation import gettext_lazy as _
 
 from django_scim.models import AbstractSCIMGroupMixin, AbstractSCIMUserMixin
+
+from scimv2bridge.sssd import SSSD, SSSDNotFoundException
 
 
 class CustomUserManager(UserManager):
@@ -32,10 +35,48 @@ class CustomUserManager(UserManager):
         user.save()
         return user
 
+    def get(self, *args, **kwargs):
+        # Look for a user in the local DB first
+        # This is needed for logging in as the django admin
+        try:
+            localuser = super().get(*args, **kwargs)
+            return localuser
+        except User.DoesNotExist:
+            # Look in SSSD
+            pass
+
+        # Support only search by scim_id
+        if 'scim_id' in kwargs.keys():
+            try:
+                sssd_if = SSSD()
+                user_dict = sssd_if.find_user_by_id(kwargs['scim_id'])
+            except SSSDNotFoundException:
+                raise User.DoesNotExist
+
+            myuser = User()
+            for (key, value) in user_dict.items():
+                setattr(myuser, key, value)
+            myuser.id = int(myuser.scim_id)
+            return myuser
+        elif 'scim_username' in kwargs.keys():
+            try:
+                sssd_if = SSSD()
+                user_dict = sssd_if.find_user_by_name(kwargs['scim_username'])
+            except SSSDNotFoundException:
+                raise User.DoesNotExist
+            myuser = User()
+            for (key, value) in user_dict.items():
+                setattr(myuser, key, value)
+            myuser.id = int(myuser.scim_id)
+            return myuser
+        else:
+            raise NotSupportedError(
+                'Support only exact search by scim_id or scim_username')
+
 
 class User(AbstractSCIMUserMixin, AbstractBaseUser):
     # Why override this? Can't we just use what the AbstractSCIMUser mixin
-    # gives us? The USERNAME_FIELD needs to be "unique" and for flexibility, 
+    # gives us? The USERNAME_FIELD needs to be "unique" and for flexibility,
     # AbstractSCIMUser.scim_username is not unique by default.
     scim_username = models.CharField(
         _('SCIM Username'),
@@ -60,7 +101,7 @@ class User(AbstractSCIMUserMixin, AbstractBaseUser):
     email = models.EmailField(
         _('Email'),
     )
-    
+
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -71,7 +112,7 @@ class User(AbstractSCIMUserMixin, AbstractBaseUser):
     scim_groups = models.ManyToManyField(
         'scimv2bridge.Group'
     )
-    
+
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'scim_username'
     REQUIRED_FIELDS = ['email']
@@ -83,7 +124,7 @@ class User(AbstractSCIMUserMixin, AbstractBaseUser):
 
     def get_short_name(self):
         return self.first_name + (' ' + self.last_name[0] if self.last_name else '')
-    
+
     @property
     def username(self):
         return self.scim_username

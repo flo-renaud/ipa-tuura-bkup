@@ -55,7 +55,7 @@ class SCIMUser(SCIMUser):
             self.obj.set_password(cleartext_password)
             self.obj._scim_cleartext_password = cleartext_password
             self.password_changed = True
-    
+
     def parse_active(self, active):
         if active is not None:
             if active != self.obj.is_active:
