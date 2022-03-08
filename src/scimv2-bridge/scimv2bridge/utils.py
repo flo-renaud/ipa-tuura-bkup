@@ -1,10 +1,15 @@
 from django.db import NotSupportedError
 from django_scim.filters import UserFilterQuery, GroupFilterQuery
 from itertools import chain
-from scimv2bridge.models import User
+from scimv2bridge.models import User, SSSDUserToUserModel
+from scimv2bridge.models import Group, SSSDGroupToGroupModel
 from scimv2bridge.sssd import SSSD, SSSDNotFoundException
 
+
 class SCIMUserFilterQuery(UserFilterQuery):
+    """
+    Custom UserFilterQuery allowing to search using SSSD DBus interface.
+    """
     attr_map = {
         # attr, sub attr, uri
         ('userName', None, None): 'scim_username',
@@ -17,7 +22,8 @@ class SCIMUserFilterQuery(UserFilterQuery):
 
     @classmethod
     def search(cls, filter_query, request=None):
-        localresult = super(SCIMUserFilterQuery, cls).search(filter_query, request)
+        localresult = super(SCIMUserFilterQuery, cls).search(
+            filter_query, request)
         if len(localresult) > 0:
             return localresult
 
@@ -34,20 +40,46 @@ class SCIMUserFilterQuery(UserFilterQuery):
 
         try:
             sssd_if = SSSD()
-            user_dict = sssd_if.find_user_by_name(value)
+            sssduser = sssd_if.find_user_by_name(value, retrieve_groups=True)
         except SSSDNotFoundException:
             return localresult
 
-        myuser = User()
-        for (attr, value) in user_dict.items():
-            setattr(myuser, attr, value)
-        myuser.id = myuser.scim_id
-
-        mylist = [myuser]
-        return mylist
+        user = SSSDUserToUserModel(sssd_if, sssduser)
+        return [user]
 
 
 class SCIMGroupFilterQuery(GroupFilterQuery):
+    """
+    Custom GroupFilterQuery allowing to search using SSSD DBus interface.
+    """
     attr_map = {
         ('displayName', None, None): 'scim_display_name'
     }
+
+    @classmethod
+    def search(cls, filter_query, request=None):
+        localresult = super(SCIMGroupFilterQuery, cls).search(
+            filter_query, request)
+        if len(localresult) > 0:
+            return localresult
+
+        # The only supported search filters are equality filters
+        items = filter_query.split(" ")
+        if len(items) != 3:
+            raise NotSupportedError('Support only exact search by displayname')
+
+        (attr, op, value) = (items[0], items[1], items[2].strip('"'))
+        if attr.lower() != "displayname":
+            raise NotSupportedError('Support only search by displayname')
+        if op.lower() != 'eq':
+            raise NotSupportedError('Support only exact search')
+
+        try:
+            sssd_if = SSSD()
+            sssdgroup = sssd_if.find_group_by_name(
+                value, retrieve_members=True)
+        except SSSDNotFoundException:
+            return localresult
+
+        group = SSSDGroupToGroupModel(sssd_if, sssdgroup)
+        return [group]
