@@ -8,7 +8,7 @@ def activate_ifp(sssdconfig):
 
     Activate the ifp service and add the following user_attributes
     to the [ifp] section:
-    +mail, +givenname, +sn
+    +mail, +givenname, +sn, +lock
 
     If the attributes were part of the negative list (for instance
     user_attributes = -givenname), they are removed from the negative list
@@ -28,11 +28,11 @@ def activate_ifp(sssdconfig):
     except SSSDConfig.NoOptionError:
         user_attrs = set()
     else:
-        negative_set = { "-mail", "-givenname", "-sn" }
+        negative_set = { "-mail", "-givenname", "-sn", "-lock" }
         user_attrs = {s.strip() for s in user_attrs.split(',')
                       if s.strip() and s.strip().lower() not in negative_set}
 
-    positive_set = { "+mail", "+givenname", "+sn" }
+    positive_set = { "+mail", "+givenname", "+sn", "+lock" }
     ifp.set_option('user_attributes',
                    ', '.join(user_attrs.union(positive_set)))
     sssdconfig.save_service(ifp)
@@ -55,7 +55,9 @@ def configure_domain(domain):
         extra_attrs = {s.strip().lower() for s in extra_attrs.split(',')
                        if s.strip()}
 
-    additional_attrs = { "mail:mail", "sn:sn", "givenname:givenname" }
+    additional_attrs = { "mail:mail", "sn:sn", "givenname:givenname",
+                         "lock:nsaccountlock"
+                       }
     domain.set_option('ldap_user_extra_attrs',
                       ", ".join(extra_attrs.union(additional_attrs)))
 

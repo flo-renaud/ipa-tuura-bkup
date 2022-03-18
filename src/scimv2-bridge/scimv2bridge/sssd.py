@@ -52,6 +52,7 @@ class SSSDUser:
         self.last_name = kwargs.get('givenname')
         self.mail = kwargs.get('mail')
         self.groups = kwargs.get('groups') or []
+        self.active = kwargs.get('active')
 
     def __repr__(self):
         groups = ", ".join(self.groups)
@@ -178,6 +179,12 @@ class _SSSD:
         mail = extra_attrs.get('mail')
         if mail:
             kwargs['mail'] = [str(x) for x in mail]
+        # Retrieve active state
+        locked = extra_attrs.get('lock')
+        if locked and str(locked[0]).lower() == 'true':
+            kwargs['active'] = False
+        else:
+            kwargs['active'] = True
 
         if (retrieve_groups):
             groups = self._sssd_iface.GetUserGroups(name)

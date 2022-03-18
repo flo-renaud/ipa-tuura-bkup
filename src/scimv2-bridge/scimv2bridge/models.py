@@ -30,6 +30,7 @@ def SSSDUserToUserModel(sssd_if, sssduser):
     usermodel.first_name = sssduser.first_name
     usermodel.last_name = sssduser.last_name
     usermodel.mail = sssduser.mail
+    usermodel.is_active = sssduser.active
     groups = []
     for groupname in sssduser.groups:
         try:
