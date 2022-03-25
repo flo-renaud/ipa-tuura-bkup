@@ -1,6 +1,8 @@
 #!/bin/python3
+import subprocess
 import sys
 import SSSDConfig
+
 
 def activate_ifp(sssdconfig):
     """
@@ -19,7 +21,8 @@ def activate_ifp(sssdconfig):
         sssdconfig.activate_service('ifp')
         ifp = sssdconfig.get_service('ifp')
     except NoServiceError as e:
-        print("ifp service not enabled, ensure the host is properly configured")
+        print("ifp service not enabled, "
+              "ensure the host is properly configured")
         raise e
 
     # edit the [ifp] section
@@ -28,11 +31,11 @@ def activate_ifp(sssdconfig):
     except SSSDConfig.NoOptionError:
         user_attrs = set()
     else:
-        negative_set = { "-mail", "-givenname", "-sn", "-lock" }
+        negative_set = {"-mail", "-givenname", "-sn", "-lock"}
         user_attrs = {s.strip() for s in user_attrs.split(',')
                       if s.strip() and s.strip().lower() not in negative_set}
 
-    positive_set = { "+mail", "+givenname", "+sn", "+lock" }
+    positive_set = {"+mail", "+givenname", "+sn", "+lock"}
     ifp.set_option('user_attributes',
                    ', '.join(user_attrs.union(positive_set)))
     sssdconfig.save_service(ifp)
@@ -55,9 +58,8 @@ def configure_domain(domain):
         extra_attrs = {s.strip().lower() for s in extra_attrs.split(',')
                        if s.strip()}
 
-    additional_attrs = { "mail:mail", "sn:sn", "givenname:givenname",
-                         "lock:nsaccountlock"
-                       }
+    additional_attrs = {"mail:mail", "sn:sn", "givenname:givenname",
+                        "lock:nsaccountlock"}
     domain.set_option('ldap_user_extra_attrs',
                       ", ".join(extra_attrs.union(additional_attrs)))
 
@@ -74,7 +76,7 @@ def configure_domains(sssdconfig):
     for name in domains:
         domain = sssdconfig.get_domain(name)
         provider = domain.get_option('id_provider')
-        if provider in { "ipa", "ad", "ldap" }:
+        if provider in {"ipa", "ad", "ldap"}:
             configure_domain(domain)
             sssdconfig.save_domain(domain)
 
@@ -97,6 +99,12 @@ def main():
     configure_domains(sssdconfig)
 
     sssdconfig.write()
+
+    # Restart SSSD
+    args = ["systemctl", "restart", "sssd"]
+    proc = subprocess.run(args, capture_output=True, text=True)
+    if proc.returncode != 0:
+        raise Exception("Error restarting SSSD:\n{}".format(proc.stderr))
 
 
 if __name__ == '__main__':
