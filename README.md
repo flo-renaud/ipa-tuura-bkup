@@ -19,7 +19,7 @@ The following script modifies sssd.conf:
 
 ```bash
 $ cd $SCIMV2_BRIDGE/src/install
-$ ./prepare_sssd.py
+$ python prepare_sssd.py
 ```
 
 ### Django preparation
@@ -34,10 +34,7 @@ $ source bridge-env/bin/activate
 Install the requirements
 
 ```bash
-$ pip install django
-$ pip install django-scim2
-$ pip install django-extensions
-$ pip install django-oauth-toolkit
+$ pip install django django-scim2 django-extensions django-oauth-toolkit
 ```
 
 Prepare the models and create the local database
@@ -55,4 +52,16 @@ Note: do not use "admin" name as it conflicts with IPA "admin" user
 ```bash
 $ python manage.py createsuperuser
 $ python manage.py runserver
+```
+
+If connecting from another system, update the ALLOWED_HOSTS line `root/settings.py`
+
+```bash
+ALLOWED_HOSTS = ['192.168.122.221', 'localhost', '127.0.0.1']
+```
+
+And run the following to have django listen on all interfaces:
+
+```bash
+$ python manage.py runserver 0.0.0.0:8000
 ```
