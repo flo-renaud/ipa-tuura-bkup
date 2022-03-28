@@ -7,6 +7,7 @@ from django_scim.adapters import SCIMGroup, SCIMUser
 
 logger = logging.getLogger(__name__)
 
+
 class SCIMUser(SCIMUser):
     @property
     def meta(self):
@@ -66,13 +67,17 @@ class SCIMUser(SCIMUser):
         if emails_value:
             email = None
             if isinstance(emails_value, list):
-                primary_emails = [e['value'] for e in emails_value if e.get('primary')]
-                other_emails = [e['value'] for e in emails_value if not e.get('primary')]
+                primary_emails = [e['value'] for e in emails_value
+                                  if e.get('primary')]
+                other_emails = [e['value'] for e in emails_value
+                                if not e.get('primary')]
                 # Make primary emails the first in the list
-                sorted_emails = list(map(str.strip, primary_emails + other_emails))
+                sorted_emails = list(
+                    map(str.strip, primary_emails + other_emails))
                 email = sorted_emails[0] if sorted_emails else None
             elif isinstance(emails_value, dict):
-                # if value is a dict, let's assume it contains the primary email.
+                # if value is a dict, let's assume it contains the primary
+                # email.
                 # OneLogin sends a dict despite the spec:
                 #   https://tools.ietf.org/html/rfc7643#section-4.1.2
                 #   https://tools.ietf.org/html/rfc7643#section-8.2
@@ -81,6 +86,23 @@ class SCIMUser(SCIMUser):
             self.validate_email(email)
 
             self.obj.email = email
+
+    @property
+    def emails(self):
+        """
+        Return the email of the user per the SCIM spec.
+        """
+        if isinstance(self.obj.email, list):
+            emails = []
+            primary = True
+            for onemail in self.obj.email:
+                emails.append({'value': onemail, 'primary': primary})
+                primary = False
+            return emails
+        elif self.obj.email:
+            return [{'value': self.obj.email, 'primary': True}]
+        else:
+            return []
 
     @property
     def is_new_user(self):
@@ -102,9 +124,11 @@ class SCIMUser(SCIMUser):
         try:
             with transaction.atomic():
                 super().save()
-                #if is_new_user:
-                    # Set SCIM ID to be equal to database ID. Because users are uniquely identified with this value
-                    # its critical that changes to this line are well considered before executed.
+                # if is_new_user:
+                #    # Set SCIM ID to be equal to database ID.
+                #    # Because users are uniquely identified with this value
+                #    # its critical that changes to this line are well
+                #    # considered before executed.
                 #    self.obj.__class__.objects.update(scim_id=str(self.obj.id))
                 logger.info(f'User saved. User id {self.obj.id}')
         except Exception as e:
