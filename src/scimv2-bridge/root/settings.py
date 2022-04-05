@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_scim',
     'scimv2bridge',
+    'creds',
 ]
 
 MIDDLEWARE = [
