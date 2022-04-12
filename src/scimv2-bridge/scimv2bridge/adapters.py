@@ -4,9 +4,10 @@ from django.contrib.auth.models import BaseUserManager
 from django.db import transaction
 
 from django_scim.adapters import SCIMGroup, SCIMUser
+from scimv2bridge.ipa import IPA
+
 
 logger = logging.getLogger(__name__)
-
 
 class SCIMUser(SCIMUser):
     @property
@@ -87,6 +88,7 @@ class SCIMUser(SCIMUser):
 
             self.obj.email = email
 
+
     @property
     def emails(self):
         """
@@ -104,11 +106,13 @@ class SCIMUser(SCIMUser):
         else:
             return []
 
+
     @property
     def is_new_user(self):
         return not bool(self.obj.id)
 
     def save(self):
+        ipa_if = IPA()
         temp_password = None
         if self.is_new_user:
             password = getattr(self.obj, '_scim_cleartext_password', None)
@@ -119,8 +123,11 @@ class SCIMUser(SCIMUser):
                 temp_password = manager.make_random_password()
                 password = temp_password
             self.obj.set_password(password)
+            ipa_if.ipa_user_add(self)
 
         is_new_user = self.is_new_user
+        if not is_new_user:
+            ipa_if.ipa_user_mod(self)
         try:
             with transaction.atomic():
                 super().save()
@@ -133,6 +140,13 @@ class SCIMUser(SCIMUser):
                 logger.info(f'User saved. User id {self.obj.id}')
         except Exception as e:
             raise e
+
+
+    def delete(self):
+        self.obj.is_active = False
+        ipa_if = IPA()
+        ipa_if.ipa_user_del(self)
+        self.obj.__class__.objects.filter(id=self.id).delete()
 
 
 class SCIMGroup(SCIMGroup):
