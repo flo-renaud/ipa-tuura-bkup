@@ -48,8 +48,8 @@ class SSSDUser:
     def __init__(self, id, username, **kwargs):
         self.id = id
         self.username = username
-        self.first_name = kwargs.get('sn')
-        self.last_name = kwargs.get('givenname')
+        self.first_name = kwargs.get('givenname')
+        self.last_name = kwargs.get('sn')
         self.mail = kwargs.get('mail')
         self.groups = kwargs.get('groups') or []
         self.active = kwargs.get('active')
