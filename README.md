@@ -34,7 +34,7 @@ $ source bridge-env/bin/activate
 Install the requirements
 
 ```bash
-$ pip install django django-scim2 django-extensions django-oauth-toolkit
+$ pip install -r $SCIMV2_BRIDGE/src/install/requirements.txt
 ```
 
 Prepare the models and create the local database
