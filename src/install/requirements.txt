@@ -1,0 +1,5 @@
+django
+django-scim2
+django-extensions
+django-oauth-toolkit
+python-pam
