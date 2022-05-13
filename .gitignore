@@ -4,3 +4,10 @@ __pycache__/
 src/scimv2-bridge/db.sqlite3
 src/scimv2-bridge/scimv2bridge/migrations/
 
+# doc
+/doc/_build
+/doc/.venv
+!/doc/Makefile
+
+# In-tree build files
+*~

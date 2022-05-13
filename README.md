@@ -65,3 +65,16 @@ And run the following to have django listen on all interfaces:
 ```bash
 $ python manage.py runserver 0.0.0.0:8000
 ```
+
+### Documentation
+
+This project uses Sphinx as a documentation generator. Follow these steps to build
+the documentation:
+
+```bash
+$ cd $SCIMV2_BRIDGE/doc/
+$ make venv
+$ make html
+```
+
+The generated documentation will be available at `$SCIMV2_BRIDGE/doc/_build/html/` folder.
