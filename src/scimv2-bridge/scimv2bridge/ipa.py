@@ -7,6 +7,7 @@ import uuid
 
 from ipalib.krb_utils import get_credentials_if_valid
 from ipalib import api
+from ipalib.errors import EmptyModlist
 from ipalib.facts import is_ipa_client_configured
 from ipalib.install.kinit import kinit_keytab, kinit_password
 from ipapython import admintool, ipaldap
@@ -22,10 +23,8 @@ class IPANotFoundException(Exception):
     pass
 
 
-
 class _IPA(admintool.AdminTool):
     _instance = None
-
 
     def __init__(self):
         """Initialize IPA API.
@@ -47,7 +46,6 @@ class _IPA(admintool.AdminTool):
         self._ccache_name = None
         self._ipa_connect()
         self._ldap_connect()
-
 
     def _ipa_connect(self):
         """Init IPA API
@@ -71,7 +69,6 @@ class _IPA(admintool.AdminTool):
         self._backend = api.Backend.rpcclient
         if not self._backend.isconnected():
             self._backend.connect(ccache=os.environ.get('KRB5CCNAME', None))
-
 
     def _valid_creds(self):
         # try GSSAPI first
@@ -112,10 +109,9 @@ class _IPA(admintool.AdminTool):
         if creds and \
            creds.lifetime > 0 and \
            "%s@" % self._ipaadmin_principal in \
-               creds.name.display_as(creds.name.name_type):
+           creds.name.display_as(creds.name.name_type):
             return True
         return False
-
 
     def _temp_kinit(self):
         """Kinit with password using a temporary ccache.
@@ -130,7 +126,6 @@ class _IPA(admintool.AdminTool):
         except RuntimeError as e:
             raise RuntimeError("Kerberos authentication failed: {}".format(e))
         os.environ["KRB5CCNAME"] = self._ccache_name
-
 
     def _ldap_connect(self):
         """Create a connection to LDAP and bind to it.
@@ -149,7 +144,6 @@ class _IPA(admintool.AdminTool):
             except Exception as e:
                 logger.error(f'Unable to bind to LDAP server {e}')
 
-
     def ipa_user_add(self, scim_user):
         """
         Add a new user
@@ -165,7 +159,6 @@ class _IPA(admintool.AdminTool):
             mail=scim_user.obj.email
             )
         logger.info(f'ipa user_add result {result}')
-
 
     def ipa_user_del(self, scim_user):
         """
@@ -185,7 +178,6 @@ class _IPA(admintool.AdminTool):
                 )
         logger.info(f'ipa: user_del result {result}')
 
-
     def ipa_user_mod(self, scim_user):
         """
         Modify ipa user
@@ -201,6 +193,10 @@ class _IPA(admintool.AdminTool):
                 sn=scim_user.obj.last_name,
                 mail=scim_user.obj.email
                 )
+        except EmptyModlist as e:
+            logger.debug("No modification for user {}".format(
+                scim_user.obj.username))
+            return
         except Exception as e:
             raise IPANotFoundException(
                 "User {} not found".format(scim_user.obj.username)
@@ -212,4 +208,3 @@ def IPA():
     if _IPA._instance is None:
         _IPA._instance = _IPA()
     return _IPA._instance
-
