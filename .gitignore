@@ -1,8 +1,8 @@
 __pycache__/
 
 # django files
-src/scimv2-bridge/db.sqlite3
-src/scimv2-bridge/scimv2bridge/migrations/
+src/ipa-tuura/db.sqlite3
+src/ipa-tuura/scimv2bridge/migrations/
 
 # doc
 /doc/_build

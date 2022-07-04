@@ -21,7 +21,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'ipatuura'
+project = 'ipa-tuura'
 copyright = '2022, FreeIPA Contributors'
 author = 'FreeIPA Contributors'
 
