@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 #!/bin/python3
 import subprocess
 import sys

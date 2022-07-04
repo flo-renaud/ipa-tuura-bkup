@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import UserManager
 from django.contrib.auth.models import GroupManager

@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 import json
 import logging
 from django.shortcuts import render
