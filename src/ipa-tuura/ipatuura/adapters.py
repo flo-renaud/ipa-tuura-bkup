@@ -8,7 +8,7 @@ from django.contrib.auth.models import BaseUserManager
 from django.db import transaction
 
 from django_scim.adapters import SCIMGroup, SCIMUser
-from scimv2bridge.ipa import IPA
+from ipatuura.ipa import IPA
 
 
 logger = logging.getLogger(__name__)
