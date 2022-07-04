@@ -4,7 +4,7 @@
 #
 -->
 
-# scimv2-bridge
+# ipa-tuura
 
 This is a bridge providing SCIM 2.0 REST API, that can be deployed on a SSSD client and queries the user identities from the SSSD id provider.
 
@@ -24,7 +24,7 @@ but sssd.conf needs to be customized in order to return additional attributes.
 The following script modifies sssd.conf:
 
 ```bash
-$ cd $SCIMV2_BRIDGE/src/install
+$ cd $IPA_TUURA/src/install
 $ python prepare_sssd.py
 ```
 
@@ -33,25 +33,25 @@ $ python prepare_sssd.py
 Create and activate a python virtual env
 
 ```bash
-$ python3 -m venv --system-site-packages bridge-env
-$ source bridge-env/bin/activate
+$ python3 -m venv --system-site-packages ipatuura-env
+$ source ipatuura-env/bin/activate
 ```
 
 Install the requirements
 
 ```bash
-$ pip install -r $SCIMV2_BRIDGE/src/install/requirements.txt
+$ pip install -r $IPA_TUURA/src/install/requirements.txt
 ```
 
 Prepare the models and create the local database
 
 ```bash
-$ cd $SCIMV2_BRIDGE/src/scimv2-bridge
+$ cd $IPA_TUURA/src/ipa-tuura
 $ python manage.py makemigrations scimv2bridge
 $ python manage.py migrate
 ```
 
-Create the djangoadmin user and start the scimv2-bridge server
+Create the djangoadmin user and start the ipa-tuura server
 
 Note: do not use "admin" name as it conflicts with IPA "admin" user
 
@@ -78,9 +78,9 @@ This project uses Sphinx as a documentation generator. Follow these steps to bui
 the documentation:
 
 ```bash
-$ cd $SCIMV2_BRIDGE/doc/
+$ cd $IPA_TUURA/doc/
 $ make venv
 $ make html
 ```
 
-The generated documentation will be available at `$SCIMV2_BRIDGE/doc/_build/html/` folder.
+The generated documentation will be available at `$IPA_TUURA/doc/_build/html/` folder.
