@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 # Makefile for Sphinx documentation
 #
 

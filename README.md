@@ -1,3 +1,9 @@
+<!---
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+-->
+
 # scimv2-bridge
 
 This is a bridge providing SCIM 2.0 REST API, that can be deployed on a SSSD client and queries the user identities from the SSSD id provider.

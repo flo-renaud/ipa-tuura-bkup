@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os

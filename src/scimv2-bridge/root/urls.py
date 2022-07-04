@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 """root URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:

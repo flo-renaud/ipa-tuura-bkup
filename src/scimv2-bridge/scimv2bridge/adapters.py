@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 import logging
 
 from django.contrib.auth.models import BaseUserManager

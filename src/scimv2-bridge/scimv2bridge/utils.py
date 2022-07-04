@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2022  FreeIPA Contributors see COPYING for license
+#
+
 from django.db import NotSupportedError
 from django_scim.filters import UserFilterQuery, GroupFilterQuery
 from itertools import chain
