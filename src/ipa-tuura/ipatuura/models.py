@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_scim.models import AbstractSCIMGroupMixin, AbstractSCIMUserMixin
 
-from scimv2bridge.sssd import SSSD, SSSDNotFoundException
+from ipatuura.sssd import SSSD, SSSDNotFoundException
 
 
 def SSSDUserToUserModel(sssd_if, sssduser):

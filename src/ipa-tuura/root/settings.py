@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_scim',
-    'scimv2bridge',
+    'ipatuura',
     'creds',
 ]
 
@@ -126,13 +126,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'scimv2bridge.User'
+AUTH_USER_MODEL = 'ipatuura.User'
 
 SCIM_SERVICE_PROVIDER = {
     'NETLOC': 'localhost',
-    'USER_ADAPTER': 'scimv2bridge.adapters.SCIMUser',
-    'GROUP_MODEL': 'scimv2bridge.models.Group',
-    'GROUP_ADAPTER': 'scimv2bridge.adapters.SCIMGroup',
-    'USER_FILTER_PARSER': 'scimv2bridge.utils.SCIMUserFilterQuery',
-    'GROUP_FILTER_PARSER': 'scimv2bridge.utils.SCIMGroupFilterQuery',
+    'USER_ADAPTER': 'ipatuura.adapters.SCIMUser',
+    'GROUP_MODEL': 'ipatuura.models.Group',
+    'GROUP_ADAPTER': 'ipatuura.adapters.SCIMGroup',
+    'USER_FILTER_PARSER': 'ipatuura.utils.SCIMUserFilterQuery',
+    'GROUP_FILTER_PARSER': 'ipatuura.utils.SCIMGroupFilterQuery',
 }

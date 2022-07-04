@@ -47,7 +47,7 @@ Prepare the models and create the local database
 
 ```bash
 $ cd $IPA_TUURA/src/ipa-tuura
-$ python manage.py makemigrations scimv2bridge
+$ python manage.py makemigrations ipatuura
 $ python manage.py migrate
 ```
 

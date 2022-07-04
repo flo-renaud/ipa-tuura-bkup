@@ -5,9 +5,9 @@
 from django.db import NotSupportedError
 from django_scim.filters import UserFilterQuery, GroupFilterQuery
 from itertools import chain
-from scimv2bridge.models import User, SSSDUserToUserModel
-from scimv2bridge.models import Group, SSSDGroupToGroupModel
-from scimv2bridge.sssd import SSSD, SSSDNotFoundException
+from ipatuura.models import User, SSSDUserToUserModel
+from ipatuura.models import Group, SSSDGroupToGroupModel
+from ipatuura.sssd import SSSD, SSSDNotFoundException
 
 
 class SCIMUserFilterQuery(UserFilterQuery):
