@@ -127,11 +127,11 @@ class SCIMUser(SCIMUser):
                 temp_password = manager.make_random_password()
                 password = temp_password
             self.obj.set_password(password)
-            ipa_if.ipa_user_add(self)
+            ipa_if.user_add(self)
 
         is_new_user = self.is_new_user
         if not is_new_user:
-            ipa_if.ipa_user_mod(self)
+            ipa_if.user_mod(self)
         try:
             with transaction.atomic():
                 super().save()
@@ -149,7 +149,7 @@ class SCIMUser(SCIMUser):
     def delete(self):
         self.obj.is_active = False
         ipa_if = IPA()
-        ipa_if.ipa_user_del(self)
+        ipa_if.user_del(self)
         self.obj.__class__.objects.filter(id=self.id).delete()
 
 

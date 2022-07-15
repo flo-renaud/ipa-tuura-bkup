@@ -148,7 +148,7 @@ class _IPA(admintool.AdminTool):
             except Exception as e:
                 logger.error(f'Unable to bind to LDAP server {e}')
 
-    def ipa_user_add(self, scim_user):
+    def user_add(self, scim_user):
         """
         Add a new user
 
@@ -164,7 +164,7 @@ class _IPA(admintool.AdminTool):
             )
         logger.info(f'ipa user_add result {result}')
 
-    def ipa_user_del(self, scim_user):
+    def user_del(self, scim_user):
         """
         Delete ipa user
 
@@ -182,7 +182,7 @@ class _IPA(admintool.AdminTool):
                 )
         logger.info(f'ipa: user_del result {result}')
 
-    def ipa_user_mod(self, scim_user):
+    def user_mod(self, scim_user):
         """
         Modify ipa user
 
