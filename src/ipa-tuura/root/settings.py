@@ -29,7 +29,7 @@ SECRET_KEY = '^$z^y$^ndlem@_f1)($_5vye6t!dk#8+8&9=y5*=-r(v465xg+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Application definition
@@ -126,6 +126,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# ipa-tuura configuration
+
+# We assume that an admin keytab is available
+os.environ["KRB5_CLIENT_KTNAME"] = '/root/scim.keytab'
+
 AUTH_USER_MODEL = 'ipatuura.User'
 
 SCIM_SERVICE_PROVIDER = {
@@ -135,4 +141,8 @@ SCIM_SERVICE_PROVIDER = {
     'GROUP_ADAPTER': 'ipatuura.adapters.SCIMGroup',
     'USER_FILTER_PARSER': 'ipatuura.utils.SCIMUserFilterQuery',
     'GROUP_FILTER_PARSER': 'ipatuura.utils.SCIMGroupFilterQuery',
+    # TODO: read from keycloak/sssd.conf
+    # WRITABLE_IFACE values: ipa, ldap, ad
+    'WRITABLE_IFACE': 'ipa',
+    'WRITABLE_USER': 'admin',
 }
